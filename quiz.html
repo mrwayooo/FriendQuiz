@@ -1,1 +1,215 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz เพื่อนคุณ</title>
 
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+    }
+
+    .box {
+      width: 100%;
+      max-width: 500px;
+      background: rgba(0,0,0,0.75);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,.4);
+      animation: pop 0.4s ease;
+    }
+
+    @keyframes pop {
+      from { transform: scale(.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .choice label {
+      display: block;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.08);
+      cursor: pointer;
+      transition: all .2s ease;
+    }
+
+    .choice label:hover {
+      background: rgba(255,255,255,0.18);
+      transform: translateX(5px);
+    }
+
+    input[type="radio"] {
+      display: none;
+    }
+
+    input[type="radio"]:checked + span {
+      background: #ffcc00;
+      color: #000;
+      padding: 12px;
+      border-radius: 12px;
+      display: block;
+      font-weight: bold;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      border-radius: 12px;
+      border: none;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ff512f, #f09819);
+      color: #000;
+    }
+
+    .secondary {
+      background: linear-gradient(135deg, #36d1dc, #5b86e5);
+    }
+
+    .result {
+      text-align: center;
+    }
+
+    .hint {
+      font-size: 13px;
+      opacity: .7;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="box" id="box">
+  <h1 id="title"></h1>
+  <h2 id="question"></h2>
+  <div id="choices"></div>
+  <button onclick="nextQuestion()">ถัดไป</button>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const friendName = params.get("name") || "เพื่อนคุณ";
+
+  document.getElementById("title").innerText =
+    "วิเคราะห์ความเกรียนของ " + friendName;
+
+  const quiz = [
+    {
+      q: "เพื่อนคุณนิสัยเป็นไง?",
+      c: [
+        { text: "a. คนดีของสังคม", type: "serious" },
+        { text: "b. ขี้เล่นนิดหน่อย", type: "social" },
+        { text: "c. โครตตัวเงินตัวทอง", type: "toxic" },
+        { text: "d. ขี้เกียจระดับตำนาน", type: "lazy" }
+      ]
+    },
+    {
+      q: "ถ้าเพื่อนคุณมีเงิน 100 เขาจะ?",
+      c: [
+        { text: "a. เก็บออม", type: "serious" },
+        { text: "b. เลี้ยงเพื่อน", type: "social" },
+        { text: "c. ใช้หมดทันที", type: "lazy" },
+        { text: "d. อวดก่อน", type: "toxic" }
+      ]
+    }
+  ];
+
+  let index = 0;
+  const score = { lazy: 0, social: 0, serious: 0, toxic: 0 };
+
+  function showQuestion() {
+    document.getElementById("question").innerText = quiz[index].q;
+    const choicesDiv = document.getElementById("choices");
+    choicesDiv.innerHTML = "";
+
+    quiz[index].c.forEach(choice => {
+      const div = document.createElement("div");
+      div.className = "choice";
+      div.innerHTML = `
+        <label>
+          <input type="radio" name="choice" value="${choice.type}">
+          <span>${choice.text}</span>
+        </label>
+      `;
+      choicesDiv.appendChild(div);
+    });
+  }
+
+  function nextQuestion() {
+    const selected = document.querySelector('input[name="choice"]:checked');
+    if (!selected) {
+      alert("เลือกก่อน เดี๋ยวเพื่อนคุณงอน 😏");
+      return;
+    }
+
+    score[selected.value]++;
+    index++;
+
+    if (index < quiz.length) {
+      showQuestion();
+    } else {
+      showResult();
+    }
+  }
+
+  function showResult() {
+    const resultType = Object.keys(score).reduce((a, b) =>
+      score[a] > score[b] ? a : b
+    );
+
+    const results = {
+      lazy: "สายขี้เกียจระดับตำนาน 😴",
+      social: "สายเฮฮา เพื่อนรัก 🥳",
+      serious: "สายจริงจัง อนาคตไกล 📈",
+      toxic: "โครตตัวเงินตัวทอง 😈🔥"
+    };
+
+    const shareText =
+      `ผลวิเคราะห์นิสัยของ ${friendName} คือ "${results[resultType]}" 😂\nลองทำดู 👉 ${location.origin + location.pathname}?name=${encodeURIComponent(friendName)}`;
+
+    document.getElementById("box").innerHTML = `
+      <div class="result">
+        <h1>ผลลัพธ์</h1>
+        <h2>${friendName}</h2>
+        <h2>${results[resultType]}</h2>
+
+        <button onclick="shareResult()">แชร์ผลลัพธ์</button>
+        <button class="secondary" onclick="location.href='index.html'">กลับไปทำใหม่</button>
+
+        <div class="hint">
+          * เพื่อความบันเทิง อย่าเอาไปตบกันจริง *
+        </div>
+      </div>
+    `;
+
+    window._shareText = shareText;
+  }
+
+  function shareResult() {
+    if (navigator.share) {
+      navigator.share({
+        title: "ผลทดสอบนิสัยเพื่อน",
+        text: window._shareText
+      });
+    } else {
+      navigator.clipboard.writeText(window._shareText);
+      alert("คัดลอกผลลัพธ์แล้ว 📋 เอาไปส่งเพื่อนได้เลย");
+    }
+  }
+
+  showQuestion();
+</script>
+
+</body>
+</html>
