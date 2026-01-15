@@ -177,39 +177,179 @@
 
     const shareText =
       `ผลวิเคราะห์นิสัยของ ${friendName} คือ "${results[resultType]}" 😂\nลองทำดู 👉 ${location.origin + location.pathname}?name=${encodeURIComponent(friendName)}`;
+<script>
+const params = new URLSearchParams(window.location.search);
+const friendName = params.get("name") || "เพื่อนคุณ";
 
-    document.getElementById("box").innerHTML = `
-      <div class="result">
-        <h1>ผลลัพธ์</h1>
-        <h2>${friendName}</h2>
-        <h2>${results[resultType]}</h2>
+document.getElementById("title").innerText =
+  "วิเคราะห์นิสัยเชิงลึกของ " + friendName;
 
-        <button onclick="shareResult()">แชร์ผลลัพธ์</button>
-        <button class="secondary" onclick="location.href='index.html'">กลับไปทำใหม่</button>
+const quiz = [
+  {
+    q: "เพื่อนคุณนิสัยโดยรวมเป็นไง?",
+    c: [
+      { text: "คนดีของกลุ่ม", score: { good: 2 } },
+      { text: "เฮฮาไปวัน ๆ", score: { social: 2 } },
+      { text: "กวนตลอดเวลา", score: { heel: 2 } },
+      { text: "โครตตัวเงินตัวทอง", score: { toxic: 2 } }
+    ]
+  },
+  {
+    q: "ถ้านัด 5 โมง เพื่อนคุณจะมา?",
+    c: [
+      { text: "มาก่อนเวลา", score: { serious: 2, good: 1 } },
+      { text: "มาตรง (หายาก)", score: { social: 1 } },
+      { text: "เลทจนลืมนัด", score: { lazy: 2 } },
+      { text: "ไม่มา ไม่บอก", score: { toxic: 2 } }
+    ]
+  },
+  {
+    q: "เวลาเพื่อนคุณเห็นคนอื่นซวย?",
+    c: [
+      { text: "ช่วยทันที", score: { good: 2 } },
+      { text: "ขำ แต่ก็ช่วย", score: { heel: 1, good: 1 } },
+      { text: "ถ่ายสตอรี่", score: { heel: 2 } },
+      { text: "ซ้ำเติม", score: { toxic: 2 } }
+    ]
+  },
+  {
+    q: "เพื่อนคุณเวลามีเงิน?",
+    c: [
+      { text: "เก็บออม", score: { serious: 2 } },
+      { text: "เลี้ยงเพื่อน", score: { social: 2, good: 1 } },
+      { text: "ใช้หมดวันนี้", score: { lazy: 2 } },
+      { text: "อวดก่อน", score: { toxic: 1, heel: 1 } }
+    ]
+  },
+  {
+    q: "ถ้าเพื่อนคุณโดนด่า?",
+    c: [
+      { text: "นิ่ง ๆ ใช้เหตุผล", score: { serious: 2 } },
+      { text: "ด่ากลับแบบกวน", score: { heel: 2 } },
+      { text: "ด่าลั่น", score: { toxic: 2 } },
+      { text: "หนีไปนอน", score: { lazy: 2 } }
+    ]
+  },
+  {
+    q: "เพื่อนคุณในแชทกลุ่ม?",
+    c: [
+      { text: "ตอบทุกข้อความ", score: { social: 2 } },
+      { text: "เงียบแต่โผล่ตอนดราม่า", score: { heel: 2 } },
+      { text: "ไม่เคยอ่าน", score: { lazy: 2 } },
+      { text: "อ่านแล้วแซะ", score: { toxic: 2 } }
+    ]
+  },
+  {
+    q: "ถ้าเพื่อนคุณมีความลับ?",
+    c: [
+      { text: "เก็บเงียบ", score: { good: 2 } },
+      { text: "เล่าเฉพาะคนสนิท", score: { social: 1 } },
+      { text: "เผลอหลุด", score: { heel: 1 } },
+      { text: "เอาไปแฉ", score: { toxic: 2 } }
+    ]
+  },
+  {
+    q: "เพื่อนคุณเวลาเรียน/ทำงาน?",
+    c: [
+      { text: "จริงจัง", score: { serious: 2 } },
+      { text: "ทำบ้างไม่ทำบ้าง", score: { social: 1 } },
+      { text: "ผัดวันประกันพรุ่ง", score: { lazy: 2 } },
+      { text: "ปั่นให้คนอื่นพัง", score: { heel: 2 } }
+    ]
+  },
+  {
+    q: "ถ้าเพื่อนคุณเห็นดราม่า?",
+    c: [
+      { text: "ไม่ยุ่ง", score: { serious: 1, good: 1 } },
+      { text: "ห้ามศึก", score: { good: 2 } },
+      { text: "เติมฟืน", score: { heel: 2 } },
+      { text: "ยุให้แตก", score: { toxic: 2 } }
+    ]
+  },
+  {
+    q: "สรุปแล้วเพื่อนคุณคือ?",
+    c: [
+      { text: "เพื่อนแท้", score: { good: 3 } },
+      { text: "ตัวสร้างสีสัน", score: { social: 2, heel: 1 } },
+      { text: "ตัวปั่นประจำกลุ่ม", score: { heel: 3 } },
+      { text: "ตัวเงินตัวทองในตำนาน", score: { toxic: 3 } }
+    ]
+  }
+];
 
-        <div class="hint">
-          * เพื่อความบันเทิง อย่าเอาไปตบกันจริง *
-        </div>
-      </div>
+let index = 0;
+const score = {
+  lazy: 0,
+  social: 0,
+  serious: 0,
+  toxic: 0,
+  heel: 0,
+  good: 0
+};
+
+function showQuestion() {
+  document.getElementById("question").innerText = quiz[index].q;
+  const choicesDiv = document.getElementById("choices");
+  choicesDiv.innerHTML = "";
+
+  quiz[index].c.forEach(choice => {
+    const div = document.createElement("div");
+    div.className = "choice";
+    div.innerHTML = `
+      <label>
+        <input type="radio" name="choice">
+        <span>${choice.text}</span>
+      </label>
     `;
+    div.onclick = () => {
+      document
+        .querySelectorAll(".choice label")
+        .forEach(l => l.classList.remove("selected"));
+      div.querySelector("label").classList.add("selected");
+      div.dataset.score = JSON.stringify(choice.score);
+    };
+    choicesDiv.appendChild(div);
+  });
+}
 
-    window._shareText = shareText;
+function nextQuestion() {
+  const selected = document.querySelector(".choice label.selected");
+  if (!selected) {
+    alert("เลือกมาก่อน อย่ากวน 😏");
+    return;
   }
 
-  function shareResult() {
-    if (navigator.share) {
-      navigator.share({
-        title: "ผลทดสอบนิสัยเพื่อน",
-        text: window._shareText
-      });
-    } else {
-      navigator.clipboard.writeText(window._shareText);
-      alert("คัดลอกผลลัพธ์แล้ว 📋 เอาไปส่งเพื่อนได้เลย");
-    }
-  }
+  const s = JSON.parse(selected.parentElement.dataset.score);
+  for (let k in s) score[k] += s[k];
 
-  showQuestion();
-</script>
+  index++;
+  index < quiz.length ? showQuestion() : showResult();
+}
+
+function showResult() {
+  const sorted = Object.entries(score).sort((a,b)=>b[1]-a[1]);
+  const top = sorted[0][0];
+
+  const resultText = {
+    good: "เพื่อนแท้ หายากมาก 😇",
+    social: "สายเฮฮา ตัวเชื่อมกลุ่ม 🥳",
+    serious: "จริงจัง มีอนาคต 📚",
+    lazy: "ขี้เกียจระดับตำนาน 😴",
+    heel: "กวนส้นเท้า ตัวปั่นประจำกลุ่ม 🦶😈",
+    toxic: "โครตตัวเงินตัวทอง 🔥😈"
+  };
+
+  document.querySelector(".box").innerHTML = `
+    <h1>ผลวิเคราะห์</h1>
+    <h2>${friendName}</h2>
+    <h2>${resultText[top]}</h2>
+    <p style="opacity:.7">* เพื่อความบันเทิง อย่าเอาไปตบกัน *</p>
+    <button onclick="location.href='index.html'">แกล้งใหม่</button>
+  `;
+}
+
+showQuestion();
+        </script>
 
 </body>
 </html>
