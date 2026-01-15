@@ -1,1 +1,125 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disclaimer</title>
 
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+    }
+
+    .card {
+      background: rgba(0,0,0,0.7);
+      padding: 30px;
+      border-radius: 18px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 20px 40px rgba(0,0,0,.4);
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h1 {
+      font-size: 20px;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 12px;
+      border: none;
+      outline: none;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    input:focus {
+      box-shadow: 0 0 0 3px #ffcc00;
+      transform: scale(1.02);
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ff512f, #f09819);
+      color: #000;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0,0,0,.4);
+    }
+
+    .hint {
+      font-size: 13px;
+      opacity: 0.7;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>
+      Disclaimer เว็บไซต์นี้ใช้สำหรับหานิสัยเพื่อน  
+      ไม่มีเจตนานำข้อมูลบุคคลภายนอกไปทำสิ่งไม่ดี
+    </h1>
+
+    <h2>ใส่ชื่อเพื่อนเพื่อตอบคำถาม</h2>
+
+    <input type="text" id="friendName" placeholder="พิมพ์ชื่อเพื่อนตัวซวย...">
+    <button onclick="startQuiz()">เริ่มตอบคำถาม</button>
+
+    <div class="hint">
+      * ใช้เพื่อความบันเทิงเท่านั้น อย่าเอาไปตบกันจริง 😅
+    </div>
+  </div>
+
+  <script>
+    function startQuiz() {
+      const name = document.getElementById("friendName").value.trim();
+
+      if (name === "") {
+        alert("ใส่ชื่อก่อน เดี๋ยวเพื่อนงอน 😏");
+        return;
+      }
+
+      window.location.href =
+        "quiz.html?name=" + encodeURIComponent(name);
+    }
+  </script>
+
+</body>
+</html>
